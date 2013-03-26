@@ -1,0 +1,30 @@
+\documentclass[11pt, onecolumn]{report}
+\pagestyle{plain}
+\begin{document}
+\chapter[Column-store Technology]{Column-store Technology for Read Intensive Workloads}
+
+\title{Introduction}
+Column-store databases have been praised for their fast performance, claiming to outperform their traditional row-store database counterpart in read-intensive environments. Prior to the emergence of column-store technology, databases used row-store to be write-optimized, organizing tuples contiguously in memory. As the desire for analytics on massive datasets grew, a renewed interest in read-optimized datastores prompted the development of alternative database architectures. Applications that would benefit from column-stores are those that are expected to perform a large amount of ad-hoc analytic queries among infrequent record updates and deletions [cstore]. Naturally, with praise comes skepticism towards column-store architecture, as researchers are challenging the notion that column-store components cannot be implemented successfuly into traditional row-store database systems [papes]. 
+
+Column-store databases are distinguished by their contiguous storage of attribute values by column, the compressed representation of that data on disk, and the use of a complex query executer which handles queries with compressed data as often as possible [cstore]. The first distinction is interesting as it allows the queries to read only the attributes necessary to execute the query, unlike row-ordered databases which must read in the whole tuple. The second and third benefits take advantage of the low variation between the contiguous data, allowing column data to be compressed on disk [Integrating Compression Abadi]. Because it has the ability to retrieve only necessary columns and reduce the physical size of data on disk, column-store's ideal workload includes large select queries on relations with a high number of columns with no updates. The clear disadvantages of a column-store architecture are the suboptimal updates and tuple reconstruction; techniques exist to reduce this time, but the bottleneck is still significant [abadi column]. 
+
+This section aims to accomplish three things: 1) to highlight the primary components of column-store technology, 2) to provide a critical analysis of commercial column-store technologies, and 3) to explore the future of hybrid column row technology. By understanding the clear benefits of column-store databases, we may make more practical decisions concerning database design in  future situations. Later, a critique of column-store performance will be provided, including a look at hybrid column-row stores that attempt to unify the advantages of both architectures. 
+
+\title{Motivation}
+Prior to emergence of the column-store architecture, row-store was the choice for database design. The benefits of row-store include the ability to update a record quickly and fast performance on queries that project the entire tuple [3]. The primary motivation for column-store databases is to read as few bytes as possible when scanning a relation [1]. By minimizing the amount of read bytes, the query will execute in less time and improve system throughput. Datacenters and coorporations are interested in improving the efficiency of read scans because they run datawarehousing and business intelligence applications that read large fact-tables to gather analytics [1]. The sooner an Analyst can query an entire relation, the more productive they can become; a huge value for coorporations with massive databases [2]. In fact, data mining applications have been turning to column-stores such as MonetDB to improve scans over the database [4]. 
+
+\title{Principal Components}
+The main intuition behind column-store is that data is physically organized on disk to maximize the amount of data that is relevant to the query on a page by organizing the attributes of a relation contiguously on disk rather than organizing tuples contiguously. A useful side-effect of organizing data on disk by column is that the data can be compressed much more effectively than tuples can in row-store [5].
+
+\title{Vendor Analysis}
+
+
+\title{Bibliography}
+1 Harizopoulos, \"Performance Tradeoffs in Read-Optimized Databases\"
+2 Larson \"Columnar Storage in SQL Server 2012\"
+3 Holloway \"Read-Optimized Databases, In Depth\"
+4 Holsheimer \"Architectural support for data mining\"
+5 Stonebraker, Abadi \"C-Store: A Column-oriented DBMS\"
+
+
+\end{document}

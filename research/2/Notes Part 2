@@ -1,0 +1,119 @@
+outline
+first part:
+introduction
+	a. what is a column store database
+	b. three key technical characteristics (stored as contiguous columns, compressed data, query executor operates on compressed data)
+	c. types of applications that would benefit from column-store architecture.
+	d. disadvantages (reading vs updating, )
+	e. advances in column-store research
+
+section 1
+motivation
+	a. The problem = disk IO is still very slow
+
+
+section 2
+overview of benefits
+	a. stored as contiguous columns
+		i. benefits
+		ii. limitations based on tuple width
+		iii. update problems
+		iv. potential solutions to update problems
+	b. compression
+		i. benefits of compression
+		ii. reasons why compression is possible with column-store
+		iii. caveat - CPU decompresses
+	c. redundancy
+		i. indexing benefits
+		ii. multiple overlapping columns
+		iii. sorted columns easier to compress
+		iv. range queries faster
+		v. compare to row-store with heavy indexing.
+	d. query execution on compressed items
+		i. BLock-tuple processing
+		ii. Easy to apply vector primities
+		iii. avoid decompression 
+		iv. late materialization
+
+section 3
+vendor comparison
+	a. Sybase IQ
+		i. 
+	b. Vertica
+	c. Vectorwise
+	d. Kx Systems
+	e. Monet DB
+
+section 4
+performance differences
+	a. 
+	b. criticisms
+
+section 5
+hybrid
+	a. 
+
+Notes:
+
+(IND8P3.pdf) - Sybase IQ Multiplex - Design For Analytics
+• historically, databases have been designed to support a large number of concurrent updates and minimize the portion of locked data.
+• internal design built ruled by small pages, less column and index updates, and rows enable a single disk i/o to modify a table.
+• Sybase IQ motivation - what would a database look like internally if it were designed form the ground up for complex analytics on massive amounts of data?
+• concurrent update streams, operational data store vs store fro cleansed and summarized data, anayltics servers are disk bound because they access few columns but many rows.
+• Syabase IQ new rules: data stored in columns (few updates, many reads, hot cache)
+• large page sizes so many cells of a column can be retrieved in a single read.
+• page level snapshot versioning
+• every column can be indexed
+• data could be compressed on disk.
+• adding or dropping column would be cheap
+• Vertical storage allows for multi-tiered compression strategy - requires less diskspace and smaller storage system footprint, required disk IO bandwidth lowered by 90% for more CPU utilization.
+• Sybase IQ DBMS are typically CPU-bound
+• Sybase has large IO request size, so Sybase IQ can exploit denser disk configurations using fewer larger disks without sacrificing performance. 
+• Sybase IQ reads only the columns referenced.
+
+C-Store: A Column-oriented DBMS
+• difference between record-oriented storage systems that are write-optimized and read-optimized systems oriented toward "ad-hoc querying of large amounts od data".w
+• Applications that benefit from fast reads: Customer relationship management, electronic library card catalogs, ad-hoc inquiry systems.
+• sacrifice CPU cycles for data store by storing compressed data and uncompressing in memory
+• C-Store physically stores a collection of columns, each sorted on some attribute. 
+• Redundant storage of data: the same column can exist on multiple projections, sorted on different attributes.
+• off-the-shelf "blade" or "grid" computers will be the cheapest hardware architecture
+• tension between reading and updating, suboptimal update performance at best. C-store solution is to have a small write-store with a tuple mover connected to a Read-optimized store, inserts are sent to the write-store, reads to the read store. Deletes are marked on the Read-store for the tuple-mover to delete.
+• snapshot isolation to avoid 2PC and Locking
+
+Old Elephant New Tricks
+• Questions the notion that C-store proponents are incompatitable with traditional row-store engines. Paper reports on attempts to simulate benefits of C-store in relational engines.
+• data-warehouses have read-mostly workloads, solutions split directions: some tried augmented traditional database with support for "complex execution plans, multi-column index support, and the ability to automatically store, query and maintain materialized views defined over the original data" (Old Elephant).
+• Because queries only read the columns they need, query processing on a column-stored architecture becomes more efficient.
+• "C-stores claim to be much more efficient than traditional row- stores. The experimental evaluation in [15] results in C-stores being 164x faster on average than row-stores, and other evaluations [14] report speedups from 30x to 16,200x (!)"
+
+Column-oriented Database Systems
+• "Reading a subset of a table’s columns becomes faster, at the potential expense of excessive disk-head seeking from column to column for scattered reads or updates."
+• "How easily can a major row-based system achieve column-store performance? Are column-stores the answer to effortlessly support large-scale data-intensive applications?"
+• "It was not until the 2000s that column-store research and commercial systems took off."
+• "Each column is stored contiguously on a separate location on disk, typically using large disk pages (or large read units) to amortize disk head seeks when scanning multiple columns on hard drives."
+• "Column scan operators differ from row-scanners in that they are responsible for translating value position information into disk locations and for combining and reconstructing (when needed) partial or entire tuples out of different columns."
+• "The intuitive argument for why column-stores compress data well is that compression algorithms perform better on data with low information entropy (high data value locality)."
+• "Two of the most-often cited disadvantages of column-stores are write operations and tuple construction."
+
+
+Performance tradeoffs of read-optimized databases
+• "We find that, in general, on modern database hardware, column stores can be substantially more I/O efficient than row stores but that, under certain circumstances, they impose a CPU overhead that may exceed these I/O gains."
+• "As Figure 2 shows, row stores have a potential advantage over col- umn stores only when a relation is lean (less than 20 bytes), and only for CPU-constrained environments (low values of cpdb). As tuples get wider, column stores maintain a sizeable relative per- formance advantage."
+• "Data warehousing and business intelligence applications rely on the efficiency a database system can provide when running com- plex queries on large data repositories. Most warehouses are bulk- loaded during periods of low activity (e.g., over night) with data acquired from a company’s operation (such as sales, or clicks on web sites)."
+• "Data warehousing and business intelligence applications rely on the efficiency a database system can provide when running com- plex queries on large data repositories."
+• "Speeding up the time it takes to read data off the disk and, through the cache hierarchies, into the CPU can have a sig- nificant performance impact. Exactly this type of optimization lies in the heart of a read-optimized DB design and comprises the focus of this paper."
+• "An important goal of read-optimized databases is to minimize the number of bytes read from the disk when scanning a relation. For a given access plan, there are two ways to achieve this goal: (a) minimize extraneous data read (information that is not needed to evaluate a query), and (b) store data in a compressed form."
+
+MonetDB
+• “select * ” not any faster
+• higher compression ratio leads to more CPU cost? - when are these tolerable?
+• storage layout - "columnar storage, header/ID elminiation, compression, multiple sort orders"
+• execution engine - "column operators, avoid decompression, late meterialization, vectorized operations"
+• timeline - 70s Time Oriented Database, 85 - DSM paper, 1990 Sybase IQ, late 90s main-mem performance
+• MonetDB motivation: Main memory, improved computational efficiency by avoiding expression interpreter, DSM with virtual IDs natural choise, developed new query execution algebra
+• 2005 rebirth of column stores - faster CPUs, larger memories, disk bandwidth limit, multi terabyte Data Warehouses New approach compined read optimized, fast multi-columnaccess, disk/PU efficiency, light-weight compression.
+• Scan performance of column vs row: Large prefetch hides disk seeks in columns, Column-CPU efficiency with lower selectivity l Row-CPU suffers from memory stalls, Memory stalls disappear in narrow tuples, Compression: similar to narrow
+• Monet avoids expression internpreter, saves disk IO when scan-intensive queries need few solumns
+
+
