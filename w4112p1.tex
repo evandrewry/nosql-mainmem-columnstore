@@ -1,0 +1,49 @@
+
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{natbib}
+\author{Cody De La Vara, Evan Drewry}
+\title{w4112p1}
+\begin{document}
+\maketitle
+
+\section*{Abstract}
+\section*{Introduction}
+\section*{Main Memory Databases}
+\section*{Column-store Databases}
+
+\section*{NoSQL and MapReduce}
+Developed initially to cope with huge volumes of data that traditional relational database systems have trouble handling efficiently
+\subsection*{NoSQL}
+\begin{itemize}
+\item NoSQL = "Not only" SQL 
+\item Departure from relational model
+\item Lightweight and scalable
+\item Sacrifice consistency for scalability
+\item Two main types, document stores (Mongo, ...) and key-value stores (BigTable, Cassandra, ...)
+\end{itemize}
+\subsubsection*{Document Stores}
+\paragraph*{MongoDB}
+\paragraph*{CouchDB}
+\subsubsection*{Key-Value Stores}
+\paragraph*{Cassandra}
+\paragraph*{BigTable}
+
+\subsection*{MapReduce}
+MapReduce is a simple high-level programming model for processing huge quantities of data in parallel. It is powerful because it provides a layer of abstraction over all the complexities of parallelization--including all partitioning of data among the cluster, execution scheduling, handling of disk and machine failures, and communication between machines--while still providing a simple and flexible programming model.\cite{dean2008mapreduce}
+
+The 
+
+MapReduce is also the name of Google's widely mimicked implementation, however the most popular implementation is Apache's open source Hadoop. 
+\subsubsection*{Hive}
+
+\subsection*{Compared to traditional relational databases}
+
+\pagebreak
+\bibliographystyle{plain}
+\bibliography{part3}
+
+\end{document}

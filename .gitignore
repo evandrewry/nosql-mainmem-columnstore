@@ -1,0 +1,12 @@
+#tex shit
+*.log
+*.aux
+*.bbl
+*.blg
+*.dvi
+*.synctex.gz
+
+#vim
+*~
+*.swp
+*.swo
