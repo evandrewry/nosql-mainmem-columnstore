@@ -1,5 +1,5 @@
 
-\documentclass[11pt,a4paper]{article}
+\documentclass[11pt,a4paper]{report}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amsfonts}
@@ -16,8 +16,9 @@
 \section*{Column-store Databases}
 
 \section*{NoSQL and MapReduce}
-Developed initially to cope with huge volumes of data that traditional relational database systems have trouble handling efficiently
+NoSQL and MapReduce are technologies that have emerged in the past decade as an answer to the explosive increase in data processing demands that has resulted from the emergence of large data-centric internet companies like Google, Amazon, and Facebook. The goal of these two technologies, therefore, is scalability and availability beyond that achievable by traditional relational database systems. Because of this, both MapReduce and the vast majority of NoSQL database systems add a layer of abstraction above cluster parallelization that provides seamless, automatic scaling and fault tolerance.
 \subsection*{NoSQL}
+NoSQL is a blanket term (and maybe even a misnomer, depending on who you ask) used to classify database systems that do not conform to the traditional relational model.
 \begin{itemize}
 \item NoSQL = "Not only" SQL 
 \item Departure from relational model
@@ -33,11 +34,11 @@ Developed initially to cope with huge volumes of data that traditional relationa
 \paragraph*{BigTable}
 
 \subsection*{MapReduce}
-MapReduce is a simple high-level programming model for processing huge quantities of data in parallel. It is powerful because it provides a layer of abstraction over all the complexities of parallelization--including all partitioning of data among the cluster, execution scheduling, handling of disk and machine failures, and communication between machines--while still providing a simple and flexible programming model.\cite{dean2008mapreduce}
+MapReduce is a simple high-level programming model for processing huge quantities of data in parallel on a cluster. It is powerful because it provides a layer of abstraction over all the complexities of parallelization on a large number of nodes--including  execution scheduling, handling of disk and machine failures, communication between machines, and all partitioning of data among the cluster--while still providing a simple and flexible programming model.\cite{dean2008mapreduce}
 
 The 
 
-MapReduce is also the name of Google's widely mimicked implementation, however the most popular implementation is Apache's open source Hadoop. 
+MapReduce is also the name Google gave to their widely mimicked implementation of the MapReduce model. The most popular open source implementation is Apache's Hadoop. 
 \subsubsection*{Hive}
 
 \subsection*{Compared to traditional relational databases}
