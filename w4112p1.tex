@@ -1,6 +1,8 @@
 
 \documentclass[11pt,a4paper]{report}
 \usepackage[utf8]{inputenc}
+\usepackage{fullpage}
+
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
@@ -12,24 +14,43 @@
 
 \section*{Abstract}
 \section*{Introduction}
+The relational model, initially proposed by Edgar F. Codd in 1969, has dominated the world of databases ever since.\cite{cod70}
 \section*{Main Memory Databases}
 \section*{Column-store Databases}
 
 \section*{NoSQL and MapReduce}
-NoSQL and MapReduce are technologies that have emerged in the past decade as an answer to the explosive increase in data processing demands that has resulted from the emergence of large data-centric internet companies like Google, Amazon, and Facebook. The goal of these two technologies, therefore, is scalability and availability beyond that achievable by traditional relational database systems. Because of this, both MapReduce and the vast majority of NoSQL database systems add a layer of abstraction above cluster parallelization that provides seamless, automatic scaling and fault tolerance.
+NoSQL and MapReduce are technologies that have emerged in the past decade to answer to the explosive increase in data processing demands that has resulted from the emergence of Web 2.0 and large, data-centric internet companies like Google, Amazon, and Facebook.\cite{leavitt2010will} The goal of these technologies, therefore, is availability and horizontal scalability beyond what is achievable with traditional relational database systems.
+
+Because of this, both MapReduce and the vast majority of NoSQL database systems add a layer of abstraction above cluster parallelization that provides seamless, automatic scaling and fault tolerance.
 \subsection*{NoSQL}
-NoSQL is a blanket term (and maybe even a misnomer, depending on who you ask) used to classify database systems that do not conform to the traditional relational model.
-\begin{itemize}
-\item NoSQL = "Not only" SQL 
-\item Departure from relational model
-\item Lightweight and scalable
-\item Sacrifice consistency for scalability
-\item Two main types, document stores (Mongo, ...) and key-value stores (BigTable, Cassandra, ...)
-\end{itemize}
+NoSQL is a blanket term (and maybe even a misnomer, depending on who you ask) used to classify database systems that do not conform to the traditional relational model. It is not even fully agreed upon what the abbreviation even stands for, though the most common interpretations are "Not only SQL" or simply "Not relational."\cite{cattell2011scalable} Sometimes the label is done away with altogether, and replaced by the slightly more accurate "Structured Storage." The term NoSQL was coined because SQL ("Structured Query Language") is tightly coupled with the relational model, and the NoSQL trend represents a departure from the "one-size-fits-all" spirit of SQL and relational databases. It is important to note that this terminology does not prescribe any specific data model, nor even a total rejection of SQL and joins; in fact, there exist many databases that fall under the NoSQL umbrella and also have a SQL-like query language associated with them. 
+
+Though the term NoSQL describes what a data store is \textit{not} rather than what it \textit{is}, there are several prevailing characteristics that are core to these so-called "NoSQL" data stores that differentiate them from other non-traditional database solutions like the main memory databases and column-stores described above (though there do exist both in-memory and column-oriented NoSQL data stores). Because the main motivation behind the NoSQL movement is the lack of scalability present in traditional relational databases, these data stores are most strongly characterized by their ability to horizontally scale simple database operations to millions of users, with application loads distributed across many servers.\cite{strauch2011nosql} Most of the other characteristics that have come to define NoSQL data stores are simply consequences of this primary goal.
+
+\subsubsection{Properties of a  general NoSQL system}
+
+\paragraph{A simple data model}
+One of the many reasons traditional relational databases have trouble scaling is the rigid, structured data model that defines them. Because of the one-size-fits-all spirit of the relational model, there is lots of unnecessary overhead  introduces A simple, non relational, model that stores STRUCTURED data rather than providing structure for the data like a 
+Lightweight and scalable
+avoid unnecessary complexity introduced by one-size-fits-all mentality
+RDBMS's are feature-rich and rigid
+Three main types: document stores (Mongo, ...), key-value stores (memcached, dynamo, ...), and Extensible Record Stores (or wide column stores, or column-oriented) (BigTable, Cassandra, ...)
+
+\paragraph{Loss of ACID compliance}
+Sacrifice consistency for scalability
+\subparagraph{CAP-theorem}
+\begin{description}
+\item[Consistency] c
+\item[Availability] foo
+\item[Partition Tolerance] blah
+\end{description}
+
+
 \subsubsection*{Document Stores}
 \paragraph*{MongoDB}
 \paragraph*{CouchDB}
 \subsubsection*{Key-Value Stores}
+\subsubsection*{Extensible Record Stores}
 \paragraph*{Cassandra}
 \paragraph*{BigTable}
 
