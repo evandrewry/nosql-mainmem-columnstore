@@ -104,6 +104,7 @@ Performance tradeoffs of read-optimized databases
 • "Data warehousing and business intelligence applications rely on the efficiency a database system can provide when running com- plex queries on large data repositories."
 • "Speeding up the time it takes to read data off the disk and, through the cache hierarchies, into the CPU can have a sig- nificant performance impact. Exactly this type of optimization lies in the heart of a read-optimized DB design and comprises the focus of this paper."
 • "An important goal of read-optimized databases is to minimize the number of bytes read from the disk when scanning a relation. For a given access plan, there are two ways to achieve this goal: (a) minimize extraneous data read (information that is not needed to evaluate a query), and (b) store data in a compressed form."
+• "Since there are no real-time updates in a read-optimized DBMS, we forego the traditional slotted-page structure in favor of a tightly packed one (see Figure 3). For both row and column data, a page contains an array of values: entire tuples for row data and single-attribute values for column data"
 
 MonetDB
 • “select * ” not any faster
@@ -115,5 +116,8 @@ MonetDB
 • 2005 rebirth of column stores - faster CPUs, larger memories, disk bandwidth limit, multi terabyte Data Warehouses New approach compined read optimized, fast multi-columnaccess, disk/PU efficiency, light-weight compression.
 • Scan performance of column vs row: Large prefetch hides disk seeks in columns, Column-CPU efficiency with lower selectivity l Row-CPU suffers from memory stalls, Memory stalls disappear in narrow tuples, Compression: similar to narrow
 • Monet avoids expression internpreter, saves disk IO when scan-intensive queries need few solumns
+
+Column-Stores vs. Row-Stores: How Different Are They Really?
+• "They show that column-oriented designs – due to superior CPU and cache performance (in addition to re- duced I/O) – can dramatically outperform commercial and open source databases on benchmarks like TPC-H. "
 
 

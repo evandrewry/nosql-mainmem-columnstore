@@ -1,0 +1,53 @@
+vendor details:
+Sybase IQ:
+Physical Structure: pages are dense-packed, large pages
+Fault Tolerance: page-level snapshot versioning, nearly lockless
+Indexes: segmented bitmaps for all columns
+Compression: all data compressed, enumeration for all columns with less that 65, 355 distinct values, data written using a compression algorithm
+join indexes
+http://www.dbms2.com/2010/05/17/technical-basics-of-sybase-iq/
+
+
+Ingres Vectorwise
+"there is no lack of data" - ok
+"VectorWise is relational database software for reporting, data analysis and Business Intelligence. VectorWise exploits performance features in today’s x86 CPUs that most other relational databases do not take advantage of. As a result VectorWise can process data much faster than most other relational databases."
+"VectorWise is unique because it takes advantage of powerful CPU features that most other databases don't."
+• Most databases leverage multi-core and multi-threading, but not all databases support SIMD instructions, larger chip caches, out of order execution, etc
+• "VectorWise was written from the ground up to take advantage of performance features in modern CPUs, resulting in dramatically higher data processing rates compared to other relational databases."
+• "VectorWise takes advantage of SIMD instructions by processing vectors of data through the Streaming SIMD Extensions instruction set."
+• "In order to achieve maximum data processing performance VectorWise avoids the use of shared RAM as execution memory. Instead VectorWise uses the private CPU core and CPU caches as execution memory delivering significantly greater data processing throughput."
+• "VectorWise implements a hybrid column store. The term that is used in the research world for the type of storage VectorWise uses is PAX"
+• "The minimum allocation for a table that is stored using columnar storage is one data block per column. The choice for row-based storage can make sense for extremely wide tables or tables with relatively few rows. This functionality is currently available as a beta feature."
+• "VectorWise uses Positional Delta Trees (PDTs) to store small incremental changes (inserts that are not appends as well as updates, and deletes (except truncates))."
+• "PDTs only use a configurable amount of memory. Once the memory pool is exhausted VectorWise automatically triggers an event (COMBINE) to write PDT changes to persistent storage. Depending on the total table size this can be an expensive operation since the trigger effectively rewrites the entire table to optimize data storage"
+• "In order to improve IO performance VectorWise allocates a portion of physical memory for a memory-based disk buffer, the Column Buffer Manager (CBM)."
+• "VectorWise automatically maintains a storage index per column storing minimum and maximum values for the data block. The storage index is very efficient in determining whether a database block is a candidate block for a particular query either because of explicit filter criteria or implicitly as a result of processing table joins."
+• "VectorWise does not currently provide a clustering option and all data can be accessed by all CPU cores in the system. To dramatically reduce the execution time of a query VectorWise can execute the statement in parallel using any number of CPU cores up to the number of cores in the server. "
+• "At present the degree of parallelism setting can only be changed in the VectorWise configuration file and a database restart is required to use a different setting."
+• "However VectorWise is still relatively new database technology. VectorWise does not provide all the rich feature/functionality that some of the databases with 20 or 30 years of history provide. At present you should not use VectorWise for multi-petabyte databases, nor should you use it for an active enterprise data warehouse that receives continues updates and supports thousands of users."
+• "Use VectorWise if you are looking for a relational database, supporting ANSI SQL and industry-standard JDBC/ODBC interfaces, that delivers extremely fast performance, is easy to use and cost-effective."
+
+
+Vertica:
+• "In customer benchmarks, Vertica has been shown to manage terabytes of data running on extraordinarily low-cost hardware and answers queries 50 to 200 times faster than competing row-oriented databases and specialized analytic hardware"
+• "Vertica employs aggressive compression of data on disk, as well as a query execution engine that is able to keep data compressed while it is operated on."
+• "Vertica has sufficient space to store multiple copies of the data to ensure fault tolerance and to improve concurrent and ad-hoc query performance."
+• "Vertica provides a standard SQL interface to users, as well as compatibility with existing ETL, reporting, and business intelligence (BI) tools."
+• "Vertica is designed to run on inexpensive clusters or “grids” of off-the-shelf Linux servers that use local disk for storage"
+• "In fact, in December 2008, Syncsort, HP and Vertica teamed up to break the world record1 for data warehouse data loading."
+• Hybrid Store "The Write-Optimized Store (WOS) is a data structure that generally fits into main memory and is designed to efficiently support insert and update operations; the data within the WOS is unsorted and uncompressed. Conversely, the Read-Optimized Store (ROS) contains the bulk of the data in the database, and is both sorted and compressed, making it efficient to read and query."
+• "Internally, both the WOS and ROS are organized into columns, with each column representing one attribute of a table."
+• Projections "In Vertica, each column may be stored in one or more Projections that represent partially redundant copies of the data in the database."
+• "In a row-store database, the disk scans all five columns. This extra three columns of scanning can represent as much as a 250% slowdown in performance."
+• "Vertica has a unique approach to distributed recoverability that avoids these costs. The basic idea is to exploit the distributed nature of a Vertica database. The Vertica DB Designer ensures that every column in every table in the database is stored on at least k+1 machines in the Vertica cluster."
+
+Kx - "A single solution for real time, historical data and analytics."
+• "The company’s core product, kdb+, is built on a single architecture for both real-time and historical data. The database incorporates its own powerful query language, q, so that analytics can be run directly on the data."
+• "Built-in multi-core processing and multi-threading.Performancescaleslinearlywith more CPUs, and applications can take advantage of multiple cores without having to write special thread-aware code."
+• "Publish and subscribe mechanisms, which offload processing from the main server onto chained servers, allowing data services to be provided to a virtually unlimited number of clients."
+• "kdb+ handles everything: data capture, storage, logging, event processing, analytics, real time and historical database."
+• "Dynamicindices,whichallowkdb+tobeabletomakeefficientuseofreal-timedata."
+• "The optimized code in kdb+ utilizes the processor-specific instruc- tions available at runtime: testing revealed highly significant speed increases when running calculations using Intel’s Advanced Vector Extensions (AVX) and SSE instructions, available on Intel’s latest generation of Sandy Bridge family of processors."
+• UUIDs native and "Support for WebSockets allows for a direct, bi-directional, full-du- plex connection between a browser and an application."
+• use kdb+tick to optimize streaming data
+• "is supported on clusters, grids, clouds, and other large-scale distributed architectures."
