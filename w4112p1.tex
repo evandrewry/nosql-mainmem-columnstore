@@ -11,10 +11,11 @@
 \title{w4112p1}
 \begin{document}
 \maketitle
-
-\section*{Abstract}
 \section*{Introduction}
-The relational model, initially proposed by Edgar F. Codd in 1969, has dominated the world of databases ever since.\cite{cod70}
+The relational model, initially proposed by Edgar F. Codd in 1969, has dominated the world of databases.\cite{cod70} The relational model was a revolution in data management, providing developers with a high-level way to describe and query their data. \cite{cod70} As time progressed, hardware characteristics changed dramatically while new types of applications focusing on big data and analytics began to emerge. The change in hardware caused new bottlenecks in database performance to appear, driving researchers to reevaluate the traditional relational-model paradigm as a general solution to all database needs. In particular, the great divide between modern CPU and disk bandwidth has inspired new types of database technologies to emerge that minimize disk latency while taking full advantage of the CPU. Scalability has also become a major concern for databases, pushing researchers to build new types of databases that can keep up with expanding businesses.
+
+This report aims to accomplish three things: 1) to highlight the primary components of each emerging technology, 2) to compare different vendors and their key features, and 3) to provide a critical analysis of each technology and their importance.  By examining each trend, we may get a better understanding of their applicability and improve our ability to make intelligent conclusions about future technologies.
+
 \section*{Main Memory Databases}
 \section*{Column-store Databases}
 
@@ -64,6 +65,9 @@ MapReduce is also the name Google gave to their widely mimicked implementation o
 
 \subsection*{Compared to traditional relational databases}
 
+
+\section{Conclusion}
+Database technology has adapted to new trends in business and research that demand scalability, availability and performance over massive databases. As these technologies continue to mature, we can expect to find more hybrid technologies on the frontier that combine the best of in-memory, column-oriented, NoSQL, and MapReduce technologies. We discussed In-Memory Databases which take advantage of the RAM access speeds and CPU processing capabilities to provide uniform data access times. As well, we described the column-store paradigm that organizes data by column on disk, rather than by tuple, and uses heavy compression to maximize disk bandwidth for ad-hoc queries. Finally, we examined NoSQL and MapReduce technologies that provide big data with horizontal scalability and availability using distributed clusters. Among these technologies, NoSQL databases are the most interesting for their emphasis on handling unstructured data at a time when the internet provides a plethora of unstructured data ripe for analysis.
 \pagebreak
 \bibliographystyle{plain}
 \bibliography{part3}
