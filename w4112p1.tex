@@ -6,6 +6,25 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{natbib}
+\usepackage{listings}
+\lstloadlanguages{Haskell}
+\lstnewenvironment{code}
+    {\lstset{}%
+      \csname lst@SetFirstLabel\endcsname}
+    {\csname lst@SaveFirstLabel\endcsname}
+    \lstset{
+      basicstyle=\small\ttfamily,
+      flexiblecolumns=false,
+      basewidth={0.5em,0.45em},
+      literate={+}{{$+$}}1 {/}{{$/$}}1 {*}{{$*$}}1 {=}{{$=$}}1
+               {>}{{$>$}}1 {<}{{$<$}}1 {\\}{{$\lambda$}}1
+               {\\\\}{{\char`\\\char`\\}}1
+               {->}{{$\rightarrow$}}2 {>=}{{$\geq$}}2 {<-}{{$\leftarrow$}}2
+               {<=}{{$\leq$}}2 {=>}{{$\Rightarrow$}}2 
+               {\ .}{{$\circ$}}2 {\ .\ }{{$\circ$}}2
+               {>>}{{>>}}2 {>>=}{{>>=}}2
+               {|}{{$\mid$}}1               
+    }
 \author{Cody De La Vara, Evan Drewry}
 \title{w4112p1}
 \begin{document}
@@ -67,7 +86,7 @@ Eventually, we expect that any good database system will be able to recognize th
 \chapter{NoSQL and MapReduce}
 NoSQL and MapReduce are technologies that have emerged in the past decade to answer to the explosive increase in data processing demands that has resulted from the emergence of Web 2.0 and large, data-centric internet companies like Google, Amazon, and Facebook.\cite{leavitt2010will} The goal of these technologies, therefore, is availability and horizontal scalability beyond what is achievable with traditional relational database systems.
 
-Because of this, both MapReduce and the vast majority of NoSQL database systems add a layer of abstraction above cluster parallelization that provides scaling and fault tolerance.
+Because of this, both MapReduce and the vast majority of NoSQL database systems are strongly characterized by the layer of abstraction they add above cluster parallelization that provides seamless scaling and fault tolerance to the application programmer. 
 
 
 \section{NoSQL}
@@ -81,7 +100,7 @@ One of the many reasons traditional relational databases have trouble scaling is
 This is not to say, however, that there is an ideal way to store data simply and scalably; in fact, the rejection of a general "one-size-fits-all" model for data storage is at the core of the NoSQL movement. Rather, the data model should be selected based on the data that is going to be stored there and the way in which it will be accessed and updated. Because of this, several major classes of data stores have emerged to meet the movement's goals of availability and scalability. Because NoSQL systems are so new, these classifications are loose and may vary depending on where you look. For our purposes, we will break them up into three major categories: key-value stores, extensible record stores, and document stores.
 
 \subsubsection{Key-Value Stores}
-These data stores are as simple as they come. The data model consists only of a dictionary mapping keys to values, and the API (at minimum) consists of operations that allow the user to insert and request data items by their keys.\cite{strauch2011nosql} Most of today's popular key-value stores were influenced by Amazon's Dynamo, but other notable examples include Redis, Project Voldemort, and memcached.
+These data stores are as simple as they come. The data model consists only of a dictionary mapping keys to values, and the API (at minimum) consists of operations that allow the user to insert and request data items by their keys.\cite{strauch2011nosql} The motivation behind this minimal data model and API is, unsurprisingly, to maximize scalability and availability by decreasing the overall complexity of the system. Most of today's popular key-value stores were influenced by Amazon's Dynamo and draw heavily from it, but other notable examples include Redis, Project Voldemort, and memcached. 
  
  
 \subsubsection{Document Stores}
@@ -90,7 +109,7 @@ Document stores are often viewed as a logical extension of the above key-value s
 
  
 \subsubsection{Extensible Record Stores}
-Extensible record stores, also called wide column stores or column-oriented data stores, are a class of NoSQL systems inspired by Google's BigTable. While there is some contention over what this class of databases should be called, the data model can be well-described as a "sparse, distributed, persistent multidimensional sorted map."\cite{chang2008bigtable} HBase, HyperTable and Facebook-developed Apache Cassandra are other notable extensible record stores.
+Extensible record stores, also called wide column stores or column-oriented data stores, are a class of NoSQL systems inspired by Google's BigTable. While there is some contention over what this class of databases should be called, the data model can be well-described as a "sparse, distributed, persistent multidimensional sorted map."\cite{chang2008bigtable} HBase, HyperTable and Apache's Facebook-developed Cassandra are other notable extensible record stores.
 
 
 \subsection{A loose concurrency model}
@@ -116,23 +135,114 @@ In the context of the NoSQL movement, high availability and partition-tolerance 
 
 Where "basically available" just means the system is highly available and works all of the time, "soft-state" means that the system need not be consistent at all times, and "eventually consistent" means that stale data is okay, but the database must converge to a consistent state eventually.\cite{brewer2000towards, strauch2011nosql} This is different from strict consistency because it does not require that all read operations return the most recently written data, but rather allows the presence of stale data as long as it is replaced by the new data eventually.
 
-\subsubsection*{Document Stores}
-\paragraph*{MongoDB}
-\paragraph*{CouchDB}
-\subsubsection*{Key-Value Stores}
-\subsubsection*{Extensible Record Stores}
-\paragraph*{Cassandra}
-\paragraph*{BigTable}
 
-\subsection*{MapReduce}
+
+
+\section{MapReduce}
 MapReduce is a simple high-level programming model for processing huge quantities of data in parallel on a cluster. It is powerful because it provides a layer of abstraction over all the complexities of parallelization on a large number of nodes--including  execution scheduling, handling of disk and machine failures, communication between machines, and all partitioning of data among the cluster--while still providing a simple and flexible programming model.\cite{dean2008mapreduce}
 
-The 
+MapReduce is also the name Google gave to their widely mimicked implementation of the MapReduce model.\cite{dean2008mapreduce} A popular open source implementation is Apache's Hadoop platform, which was developed heavily by Yahoo and is used today by many web companies, including Facebook, Amazon, and Last.fm.\cite{zaharia2008improving}
 
-MapReduce is also the name Google gave to their widely mimicked implementation of the MapReduce model. The most popular open source implementation is Apache's Hadoop. 
-\subsubsection*{Hive}
+\subsection{Motivation \& Background}
+The MapReduce programming model is derived from the map and reduce (sometimes referred to as "fold" or "inject") primitives that are core to functional programming languages like Lisp and Haskell.\cite{dean2008mapreduce}  
 
-\subsection*{Compared to traditional relational databases}
+\paragraph{map} takes a function and a list as arguments, and returns the list that results from applying the function to each element in the input list.
+\begin{lstlisting}
+map :: (a -> b) -> [a] -> [b]
+map f xs = [f x | x <- xs]
+\end{lstlisting}
+For example, \lstinline{map square [1,2,3]} would output the result of squaring each item in the list, which would be \lstinline{[1,4,9]}.
+
+\paragraph{reduce} also takes a function and a list as arguments, but returns a single value that is built up by applying the input function to a single element and the result of reducing the rest of the list. We also provide a base case (usually the identity for whatever function we are inputting), which is the \lstinline{z} parameter in the following code:
+\begin{lstlisting}
+reduce :: (a -> b -> b) -> b -> [a] -> b
+reduce f z []     = z 
+reduce f z (x:xs) = f x (reduce f z xs) 
+\end{lstlisting}
+For example, \lstinline{reduce (+) 0 [1,2,3]} would output the sum of all list items (and 0, our identity base case), which would be \lstinline{6}.
+
+\paragraph*{}
+In practice, these two functions are often used together by mapping a function onto some list and then reducing the map output. For example, if we wanted to compute the sum of all squares in a list, we could implement it as 
+\begin{lstlisting}
+sumsquares :: [a] -> b
+sumsquares xs = reduce (+) 0 (map square xs)
+\end{lstlisting}
+It is easy to imagine how this simple map-reduce pattern can be extended to perform pretty much any computation we could ever need to apply to a set of data, and it is this flexibility that motivated the development of the MapReduce model that has become so widely used in big data processing today.  Before they developed MapReduce, engineers at Google noticed that most of the computations they were running against their data "involved applying a map operation to each logical 'record' ... in order to compute a set of intermediate key/value pairs, and then applying a reduce operation to all the values that shared the same key, in order to combine the derived data appropriately."\cite{dean2008mapreduce} 
+
+\subsection{Programming Model}
+While similar at a high level to the \textit{map} and \textit{reduce} functions discussed above, the implementation of these ideas in the MapReduce model differ in several ways. From a bird's-eye view, a MapReduce computation takes a set of input key/value pairs, and produces a set of output key/value pairs. The programmer specifies the computation by defining a map function and a reduce function, and the MapReduce library takes care of all the parallelization, which is completely hidden from the programmer's point of view. The execution of a MapReduce job typically follows three main stages: \textit{Map}, \textit{Shuffle}, and \textit{Reduce}. 
+\begin{enumerate}
+\item The \textit{Map} function takes as input a key-value pair from the set of input data, and emits a set of intermediate key-value pairs. 
+\item In the \textit{Shuffle} step, these intermediate results are then grouped by key, redistributed among the nodes in preparation for the reduce stage, and then finally passed to the \textit{Reduce} function. 
+\item The \textit{Reduce} function takes as input an intermediate key along with the set of values associated with that key, and outputs key-value pair(s) that are to be inserted into the result set.\cite{dean2008mapreduce}
+\end{enumerate}
+This extension of the traditional map/reduce pattern found in functional programming languages makes it even more flexible for use in big data applications.
+
+\section{Vendors}
+\subsection{Key-Value Stores}
+\paragraph{Dynamo}
+Dynamo is a proprietary key-value data store developed and maintained internally by Amazon with the goal of providing reliability at a massive scale.\cite{decandia2007dynamo} It was the first of the NoSQL key-value stores to garner attention, and has since been extremely influential in the design of many other key-value data stores that exist today.\cite{strauch2011nosql} Its development was motivated by the presence of many services on the Amazon.com platform that required nothing more from the database than a primary key lookup. For these services (like best-seller lists, shopping carts, session management, sales rankings, and many more), the engineers at Amazon deemed the overhead of using a traditional relational database too costly, as it severely limited scale and availability.\cite{decandia2007dynamo}  In order to meet their scalability requirements, Amazon incorporated algorithms and technologies drawn from the fields of peer-to-peer networks, distributed file systems, and distributed databases.\cite{orend2010analysis} In their paper \textit{Dynamo: Amazon's Highly Available Key-value Store}, the major features of Dynamo are outlined as follows:  "Dynamo uses a synthesis of well known techniques to achieve scalability and availability: Data is partitioned and replicated using consistent hashing, and consistency is facilitated by object versioning. The consistency among replicas during updates is maintained by a quorum-like technique and a decentralized replica synchronization protocol. Dynamo employs a gossip based distributed failure detection and membership protocol. Dynamo is a completely decentralized system with minimal need for manual administration. Storage nodes can be added and removed from Dynamo without requiring any manual partitioning or redistribution."\cite{decandia2007dynamo}
+
+\paragraph{Redis}
+Redis is an open-source implementation of the key-value store developed by VMware, and the most popular key-value store in use today.\cite{dbranking,paksulapersisting} It differs from Dynamo in that it is an in-memory database with optional durability, and supports data structures as values instead of limiting them to strings only. Because it keeps all data in memory, Redis is generally extremely fast even while supporting greater functionality than a simple key-value store. However, this also makes it subject to the size constraints that come with using RAM for persistence.\cite{paksulapersisting} 
+
+While Redis does not support indexing or complicated queries, it does provide functionality to manipulate the data structures it supports as values. These "Redis Datatypes" include strings, lists, sets, sorted sets, and hashes and they have support for common operations. The optional durability is achieved using techniques similar to those used in more traditional main-memory databases, using snapshots and logging.\cite{paksulapersisting} 
+
+\subsection{Document Stores}
+\paragraph{MongoDB}
+Though its development did not begin until 2007, the 10gen-supported (but open source) MongoDB is the most popular NoSQL data store that exists today and is the de-facto standard in document storage.\cite{metz2011mongo,dbranking} The name comes from the word "hu\textbf{mongo}us", as the system was designed with scalability and speed in mind.\cite{orend2010analysis} It was created with the goal of closing the gap that existed between ultra-scalable key-value stores (like Dynamo) and highly structured, feature-rich relational databases.\cite{strauch2011nosql} MongoDB provides a more complex, structured data model than key-value stores while still maintaining seamless scalability with features like automatic sharding.
+
+Data in MongoDB is schema-less and stored in a format called BSON, which is basically just a binary encoded JSON. As in JSON, this encoding supports embedded objects and arrays that allows nesting of data. Unlike CouchDB, Mongo has full support for in-place updates of fields, and does not require the document to be loaded in order to manipulate it. Each document is indexed by an ID, and additional indexes can also be created to speed up queries on individual fields of documents. A variation of MapReduce is used to express more complex queries.\cite{orend2010analysis}
+
+Documents are organized into collections, and indexes are kept on a per-collection basis, so documents of the same type/structure are generally stored in a collection together.\cite{strauch2011nosql} It can be useful to think of these collections as being somewhat analogous to tables in a traditional database, but this is not exactly true because queries can be run against only one collection at a time and there is no notion of joins or relations between collections.\cite{orend2010analysis}
+
+Though relations do not exist in MongoDB, they can be modeled using embedded objects, though this comes at a cost of either decreased performance or data redundancy.\cite{orend2010analysis} 
+
+\paragraph{CouchDB}
+Apache CouchDB, created by ex-Lotus Notes developer Damien Katz in the mid-2000's, is another popular open-source implementation of the document store data model.\cite{finley2012nosql} The goal of CouchDB's developers was to create a scalable data store entirely integrated with the web and associated technologies. As a result, CouchDB uses Representational State Transfer (REST) in its API, Javascript Object Notation (JSON) for encoding data, and Javascript as its query language; is  accessible via an HTTP interface; and can also be easily integrated with load balancers, proxy caches, etc. Because of its fault-tolerance and ease of scaling, CouchDB has also been dubbed with the backronym "cluster of unreliable commodity hardware."\cite{strauch2011nosql} 
+
+CouchDB stores data in schema-less documents very similar to the ones in MongoDB, but its data model somewhat simpler because the documents are stored in a flat address space rather than in collections, the documents are stored in the JSON format (which is just a string), and there is no support for in-place updates on fields. Instead, the entire document must be loaded in order to update it.\cite{strauch2011nosql} 
+
+Like MongoDB, CouchDB provides two ways to execute queries--one for simple accesses and a another using a variation of MapReduce for more complex queries. The first is via a simple RESTful HTTP interface, which allows simple lookups by key. The second allows us to create "Views" by specifying MapReduce functions. These are different from MongoDB's MapReduce queries because they must be specified before runtime and are updated each time a document is updated, and therefore cannot be executed dynamically.\cite{orend2010analysis}
+
+CouchDB also differs from MongoDB in its concurrency model. This is mainly because the system uses multi version concurrency control, and performs optimistic replication on both the server and client side. In order to keep track of the many replicated copies, CouchDB keeps a revision id in each document in addition to the id, and maintains an index on both of these fields. The system uses these revision ids to detect conflicts, which can be resolved either by merging the conflicting documents or by passing along the responsibility for conflict resolution to the application. \cite{orend2010analysis} 
+
+
+\subsection{Extensible Record Stores}
+\paragraph{BigTable}
+Though it is proprietary and unavailable for use outside of Google, their BigTable data store has proven to be one of the most widely influential NoSQL systems to ever have been developed, and the origin of the extensible record store class of database systems can be traced back to it.\cite{khetrapal2006hbase}  It is notable because Google has successfully used it to scale their applications into the range of "petabytes of data across thousands of commodity servers" thanks to its robust fault-tolerance and seamless scaling.\cite{chang2008bigtable} Though it has never been distributed and only Google is actually able to use it, Google's publications on the topic have been the main inspiration for widely popular open source implementations like Cassandra, HBase, and HyperTable.\cite{lakshman2010cassandra,taylor2010overview,khetrapal2006hbase}
+
+The extensible record store data model is more complex than key-value stores and document stores, and is described by Google as a "sparse, distributed, persistent multidimensional sorted map."\cite{chang2008bigtable} A BigTable maps a row key, column key, and timestamp to a string value contained in a cell of the table. The table maintains sorted order by row key, and these rows are dynamically partitioned by the system into ranges called \textit{tablets} that are distributed to individual nodes and stored in a Google File System (GFS). A metadata server keeps track of these partitions.\cite{chang2008bigtable}
+
+Column keys are grouped into \textit{column families} that are somewhat like columns in a relational table in the sense that they store a certain class of data about a row. However, they are different because once a column family is created in the table, any column key can be used in the family and is referred to by \textit{family:key}. Column families also serve as units of compression.\cite{chang2008bigtable}
+
+BigTable is also characterized by its reliance on other pieces of Google infrastructure. The GFS provides BigTable with a distributed file system on which to save data. Chubby Lock Service is used for concurrency control. Google SSTable file format is used to store BigTable data internally.
+
+It is also notable because unlike nearly all other NoSQL systems, it guarantees consistency.
+\cite{chang2008bigtable}
+
+\paragraph{Cassandra}
+Facebook initially developed Cassandra to power their inbox search feature, but it has since been open-sourced and handed over to the Apache Software Foundation.\cite{lakshman2010cassandra,featherston2010cassandra} Because inbox search needed to scale to support hundreds of millions of users with massive quantities of data spread across many commodity servers located all around the world, all while providing a highly available service with no single point of failure, a relational database solution was deemed unfit. So, they decided to design their own NoSQL solution that could handle high write throughput without sacrificing read efficiency.\cite{lakshman2010cassandra}
+
+Cassandra's design combines the BigTable data model with the built-in infrastructure and eventual consistency properties of Dynamo.\cite{featherston2010cassandra} It does not rely on any external infrastructure in the way that BigTable relies on a distributed file system and a locking service. Its consistency model is also looser than that of BigTable's, and can be tuned to both extremes of consistency--from blocking until all replicas have become consistent (strict) to allowing all writes with no regard to consistency among nodes (loose). It also lacks any single point of failure (like the metadata servers in BigTable) and is completely decentralized, meaning each node is able to respond to every request.
+
+Cassandra also offers seamless integration with other Apache projects like Hadoop MapReduce, Apache Pig, and Apache Hive.
+
+
+\section{Analysis}
+As we have seen, there is huge variation across the different NoSQL data models and implementations that exist today. Given that they were designed around the motivation to fit a specific class of problems \textit{very well}, very much unlike the traditional relational database systems that dominate the computing world today and were designed to fit \textit{very many} classes of problems in a general way, this is unsurprising. While not useful for every type of application, the NoSQL databases we have discussed here are still quite important because they provide very high performance solutions for specific use cases. In fact, the web as we know it today would exist very differently if these data stores were to never have been developed--without them it is quite possible that many of the online services we use daily and rely upon heavily could not scale to the huge number of users that access them today. 
+
+The development of NoSQL and MapReduce over the past ten years has resulted in great advances in the fields of big data processing and responsive web applications, not only for large companies but also for small applications, web startups, and individual developers. In addition to the massively accessed web apps and big data needs these technologies were designed to address, the introduction of these large-scale data stores and processing mechanisms has also made possible huge platforms like Amazon's elastic cloud services, Heroku, and Google App Engine that have contributed greatly to mobile computing and have changed the way even the little guys treat their data. While a simpler answer might be that NoSQL has mostly impacted large web applications, data warehousing, and companies that anticipate fast growth and need to satisfy scalability requirements, this is just not true. Everyone who uses the modern web in their daily life has felt the impact of the benefits provided by these technologies even though the vast majority of these people are not even aware of NoSQL's existence, let alone that MapReduce jobs might be spawned by the tap of a finger on the screens of their iPhones. 
+
+The benefits provided by NoSQL and MapReduce are certainly quantifiable--if they weren't, we would not be seeing companies like Facebook and Google turn away from mature, reliable relational database systems that have been around for ages in favor of these young systems that are still being developed. However, there are losses that are just as quantifiable, if not more so. This is because these systems were never meant to perform well in all situations. They are not the "one-size-fits-all" solutions that we are accustomed to getting from database systems, and they have very clear weaknesses and strengths. It is up to the developer to assess these tradeoffs and make an informed decision about what fits his application best.
+
+The gains that these technologies have made in the areas of scalability and availability have changed the world, and thousands of useful, interesting, and important web applications have been implemented that would have otherwise been impossible to realize. More important, though, is how these new classes of database systems have paved the way to a complete transformation in the way people view databases. For most of the past thirty years, if you were to ask a developer to explain what databases are and why they are important, you would more than likely get an explanation of the relational model and the guarantees of ACID, as if the full potential of data stores had already been realized in 1970 when Edgar F. Codd published his seminal paper presenting \textit{A Relational Model of Data for Large Shared Data Banks}.\cite{cod70}
+
+The advent of NoSQL represents a sea change in the world of databases. While much of the hype over NoSQL data stores may indeed just be hype, what has resulted from it is that the traditional monolithic relational database systems like Microsoft SQL Server, Oracle, and MySQL are no longer the immediate first choice for developers when they are choosing a data store to back an application they are creating. For most applications, the question of "Which database?" used to result in a choice between several rigid, full-featured, relational systems that all seemed pretty much the same anyway. Now that the diversity of choices is so much wider than it once was, developers and researchers all over the world are realizing the merits of having a data store that fits their specific needs, and there will only be more and more of these choices that arise in the future. This is where we expect to see the greatest legacy of the NoSQL movement in the long term. While the systems we have discussed here have certainly made great innovations in the field of databases, and have surely had a significant impact on the scalability and availability of big data applications, it is far more significant that these systems have popularized the use of "alternative" data stores outside of very specific niche use-cases (like main-memory database systems in high frequency trading applications, for example).
+
+Because of this newfound popularity of non-traditional database systems, we expect to see the budding of new classes of databases continue, and we expect to see a renewed vigor in the field of databases as more and more new and exciting technologies emerge. The actual implementations of and strategies used by the young database systems we have discussed may change as they mature, and it is entirely possible that many of them will not be around long enough to mature at all; new technology will continue to be developed and replace old technology as we have seen again and again.
+
+
 
 \pagebreak
 \bibliographystyle{plain}
